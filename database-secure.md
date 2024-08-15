@@ -38,6 +38,10 @@ In order to download the backup, we need to create a temporary pod in AKS and us
 1. Using the Azure CLI, fetch AKS credentials and login:
 
 ```bash
+az login
+```
+
+```bash
 az account set --subscription <subscription-id>
 ```
 

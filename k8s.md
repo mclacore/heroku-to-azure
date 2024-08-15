@@ -33,13 +33,19 @@ Browse to `http://localhost:8000` to see your app running.
 
 ### Create an Azure Container Registry
 
-1. Create a resource group:
+1. Log into Azure CLI:
+
+```bash
+az login
+```
+
+2. Create a resource group:
 
 ```bash
 az group create --name <resource-group> --location <location>
 ```
 
-2. Create an Azure Container Registry:
+3. Create an Azure Container Registry:
 
 ```bash
 az acr create --resource-group <resource-group> --name <registry-name> --sku Basic
