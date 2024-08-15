@@ -3,7 +3,6 @@
 ## Prerequisites
 
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
 - [Docker](https://docs.docker.com/get-docker/)
 
 ## Dockerize Heroku app

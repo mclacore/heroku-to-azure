@@ -3,7 +3,6 @@
 ## Prerequisites
 
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [Docker](https://docs.docker.com/get-docker/)
 - A deployed Azure Kubernetes Service (AKS) cluster
