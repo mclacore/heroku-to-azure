@@ -20,6 +20,8 @@ Guides for migrating your database to Azure:
 
 ## Cache Migration
 
-Heroku CLI does not support creating backups from the Redis add-on. You can use the `redis-cli` to create a backup and restore it to Azure Redis Cache, and I'll link to a guide I found [here](https://cyounkins.medium.com/getting-a-redis-rdb-dump-out-of-heroku-427b5b4cac49) that creates the backup dump. Then, you can follow the guide to import into Azure Cache Redis [here](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-import-export-data#import).
+Guide for migrating your cache to Azure:
+
+- [Azure Redis Cache](./cache.md)
 
 ## CI/CD Pipeline Migration

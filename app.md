@@ -121,6 +121,8 @@ _The `<app-name>` must be globally unique._
 az webapp config appsettings set --resource-group <resource-group> --name <app-name> --settings WEBSITES_PORT=<port>
 ```
 
+_Also feel free to set other environment variables as needed using the command above. For example, you can set the `DATABASE_URL` or the `CACHE_URL`._
+
 2. Set the managed identity for the App Service:
 
 ```bash
