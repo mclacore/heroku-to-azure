@@ -12,6 +12,17 @@ It's hard to provide a general guide on how to dockerize a Heroku app, as it dep
 - Use `docker init` in your app directory to generate a custom `Dockerfile` for your app.
 - Use a `.dockerignore` file to exclude unnecessary files and directories from the Docker image.
 - Use a build cache to speed up the build process.
+- Build and test your Docker image locally before pushing it to a registry.
+
+```bash
+docker build --tag <my-image-name> .
+```
+
+```bash
+docker run -it -p 8000:8000 <my-image-name>
+```
+
+Browse to `http://localhost:8000` to see your app running.
 
 > [!TIP]
 > For a detailed video tutorial on getting started with Docker, check out my **Best Practices for Containerizing Web Apps with Docker** [video](https://www.youtube.com/watch?v=1Guuaf5JTr0).
@@ -173,3 +184,4 @@ On first load, the app might take a few seconds to start as it pulls the image f
 ## Sources
 
 - [Migrate custom software to Azure App service using a custom container](https://learn.microsoft.com/en-us/azure/app-service/tutorial-custom-container?tabs=azure-cli&pivots=container-linux)
+- [Top 8 Docker Tips & Tricks for 2024](https://www.docker.com/blog/8-top-docker-tips-tricks-for-2024/)

@@ -97,15 +97,38 @@ kubectl get nodes
 az acr list --resource-group <resource-group> --query "[].{acrLoginServer:loginServer}" --output table
 ```
 
-2. Open the `app.yaml` manifest file with a text editor and replace the `image` field with the login server name:
+2. Create a manifest file for your app `<your-app>.yaml` with the following content:
 
 ```yaml
-containers:
-  - name: <containerName>
-    image: <loginServer>.azurecr.io/<imageName>:<tag>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <app-name>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <app-name>
+  template:
+    metadata:
+      labels:
+        app: <app-name>
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+        - name: <containerName>
+          image: <loginServer>.azurecr.io/<imageName>:<tag>
+          ports:
+            - containerPort: 8000
+          env:
+            - name: env
+              value: "dev"
 ```
 
-Save and close the file.
+3. Replace `<app-name>`, `<containerName>`, `<loginServer>`, `<imageName>`, and `<tag>` with your values.
+
+4. Save and close the file.
 
 ### Deploy the app
 
@@ -137,5 +160,5 @@ Watch the `EXTERNAL-IP` address for your service to change from `<pending>` to a
 
 ## Sources
 
-- [Tutorial - Deploy a containerized app to AKS](https://learn.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app?tabs=azure-cli)
+- [Tutorial - Deploy a containerized app to AKS](https://learn.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-app)
 - [Top 8 Docker Tips & Tricks for 2024](https://www.docker.com/blog/8-top-docker-tips-tricks-for-2024/)

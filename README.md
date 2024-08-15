@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Hi there. This is a guide to migrate your Heroku app to Azure. This guide is written for a Node.js app, but the steps are similar for other languages.
+Hi there. This is a guide to migrate your Heroku app to Azure. This guide is written for a Node.js app, but the steps are similar for other languages. You may use the example app in this repo, or follow the guide for your own app.
 
 ## App Migration
 
