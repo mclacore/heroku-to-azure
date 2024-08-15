@@ -107,6 +107,8 @@ heroku login
 heroku pg:backups:download --app <app-name>
 ```
 
+### Restore the backup
+
 ```bash
 pg_restore --verbose --no-owner -h <azure-postgres-server>.postgres.database.azure.com -U <username> -d <database-name> latest.dump
 ```
@@ -117,7 +119,7 @@ _You can confirm the restoration by running the following:_
 psql -h <azure-postgres-server>.postgres.database.azure.com -U <username> -d <database-name> -c \dt
 ```
 
-7. Delete the temporary pod:
+### Delete the temporary pod
 
 ```bash
 kubectl delete pod postgres
