@@ -8,15 +8,15 @@ Hi there. This is a guide to migrate your Heroku app to Azure. This guide is wri
 
 Guides for migrating your app to Azure:
 
-- Azure App Service [here](./app.md)
-- Azure Kubernetes Service [here](./k8s.md)
+- [Azure App Service](./app.md)
+- [Azure Kubernetes Service](./k8s.md)
 
 ## Database Migration
 
 Guides for migrating your database to Azure:
 
-- Azure PostgresQL (private network access only) [here](./database-secure.md)
-- Azure PostgresQL (public network access) [here](./database-public.md)
+- [Azure PostgresQL (private network access only)] [here](./database-secure.md)
+- [Azure PostgresQL (public network access)](./database-public.md)
 
 ## Cache Migration
 
