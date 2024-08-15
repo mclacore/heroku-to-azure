@@ -7,7 +7,6 @@ This guide will walk you through the steps to migrate a Heroku Postgres database
 
 ## Prerequisites
 
-- Azure PostgreSQL Flexible Server instance up and running
 - [psql client](https://www.postgresql.org/download/)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#troubleshooting-the-heroku-cli)
@@ -49,6 +48,26 @@ az login
 ```bash
 az account set --subscription <subscription-id>
 ```
+
+### Set up the Azure Database for PostgreSQL Flexible Server
+
+1. Create an Azure Database for PostgreSQL Flexible Server:
+
+```bash
+az postgres flexible-server create \
+  --resource-group <resource-group-name> \
+  --name <server-name> \
+  --location <location> \
+  --admin-user <username> \
+  --admin-password <password> \
+  --tier GeneralPurpose \
+  --sku-name Standard_D2s_v3 \
+  --storage-size 128 \
+  --version 16 \
+  --public-access <your-ip-address>
+```
+
+_Modify the values for `version`, `storage-size`, `sku-name`, and `tier` as needed._
 
 2. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
 
