@@ -9,7 +9,7 @@ This guide will walk you through the steps to migrate a Heroku Postgres database
 
 - [psql client](https://www.postgresql.org/download/)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#troubleshooting-the-heroku-cli)
+- [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
 
 ## Migration
 
@@ -72,17 +72,21 @@ _Modify the values for `version`, `storage-size`, `sku-name`, and `tier` as need
 2. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
 
 ```bash
-login=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "[fullyQualifiedDomainName, administratorLogin]" --output tsv)
+fqdn=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "fullyQualifiedDomainName" --output tsv)
+```
+
+```bash
+username=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "administratorLogin" --output tsv)
 ```
 
 3. Restore the backup to your Azure Database for PostgreSQL Flexible Server:
 
 ```bash
-pg_restore --verbose --no-owner -h $login[0] -U $login[1] -d <database-name> latest.dump
+pg_restore --verbose --no-owner -h $fqdn -U $username -d <database-name> latest.dump
 ```
 
 4. Confirm the data has been restored:
 
 ```bash
-psql -h $login[0] -U $login[1] -d <database-name> -c \dt
+psql -h $fqdn -U $username -d <database-name> -c "\dt"
 ```
