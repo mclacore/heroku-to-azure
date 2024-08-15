@@ -15,7 +15,7 @@ Guides for migrating your app to Azure:
 
 Guides for migrating your database to Azure:
 
-- [Azure PostgresQL (private network access only)] [here](./database-secure.md)
+- [Azure PostgresQL (private network access only)](./database-secure.md)
 - [Azure PostgresQL (public network access)](./database-public.md)
 
 ## Cache Migration
