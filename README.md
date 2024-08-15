@@ -25,3 +25,8 @@ Guide for migrating your cache to Azure:
 - [Azure Redis Cache](./cache.md)
 
 ## CI/CD Pipeline Migration
+
+Guide for migrating your CI/CD pipeline:
+
+- [GitHub Actions](./ghaction.md)
+- [Azure DevOps](./azdevops.md)

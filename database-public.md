@@ -40,19 +40,29 @@ _This will download a file named `latest.dump` to your current directory._
 
 ### Restore the backup
 
-1. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
+1. Log into Azure CLI and set the subscription you want to use:
+
+```bash
+az login
+```
+
+```bash
+az account set --subscription <subscription-id>
+```
+
+2. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
 
 ```bash
 login=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "[fullyQualifiedDomainName, administratorLogin]" --output tsv)
 ```
 
-2. Restore the backup to your Azure Database for PostgreSQL Flexible Server:
+3. Restore the backup to your Azure Database for PostgreSQL Flexible Server:
 
 ```bash
 pg_restore --verbose --no-owner -h $login[0] -U $login[1] -d <database-name> latest.dump
 ```
 
-3. Confirm the data has been restored:
+4. Confirm the data has been restored:
 
 ```bash
 psql -h $login[0] -U $login[1] -d <database-name> -c \dt
