@@ -31,8 +31,6 @@ heroku login
 heroku pg:backups:capture --app <app-name>
 ```
 
-This command will create a backup of your Heroku Postgres database.
-
 ### Download the backup on AKS
 
 In order to download the backup, we need to create a temporary pod in AKS and use it as a jump box. Once the backup is downloaded, we will restore the backup to the Azure PostgreSQL Flexible Server, then delete the temporary pod.
