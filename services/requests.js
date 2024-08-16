@@ -15,17 +15,23 @@ const client = createClient({
 
 client.on("error", (err) => console.log("Redis Client Error", err));
 
-await client.connect();
+(async () => {
+  try {
+    await client.connect();
+    console.log("Connected to Redis");
 
-await client.hSet("user-session:123", {
-  name: "John",
-  surname: "Doe",
-  company: "Massdriver",
-  email: "john@massdriver.cloud",
-});
+    await client.set("foo", "bar");
+    console.log("Set foo to bar");
 
-let userSession = await client.hGetAll("user-session:123");
-console.log(JSON.stringify(userSession, null, 2));
+    const value = await client.get("foo");
+    console.log("Value of foo:", value);
+  } catch (err) {
+    console.error("Error connecting to Redis", err);
+  } finally {
+    await client.quit();
+    console.log("Disconnected from Redis");
+  }
+})();
 
 const getAllActivities = (req, res) => {
   const getString = "SELECT * FROM my_activities";
@@ -79,4 +85,3 @@ module.exports = {
   getAllActivities,
   deleteAllActivites,
 };
-
