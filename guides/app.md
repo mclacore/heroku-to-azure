@@ -73,6 +73,8 @@ az acr repository list --name <registry-name> --output table
 
 ### Create a user-assigned managed identity
 
+Click [here](https://github.com/massdriver-cloud/application-templates/tree/main/azure-app-service) for a production-ready configuration built using Terraform.
+
 Azure App Service can either use a default system-assigned managed identity or a user-assigned managed identity to authenticate to a container registry. For best practices, we recommend using a user-assigned managed identity.
 
 1. Create a resource group:
@@ -102,8 +104,6 @@ az role assignment create --assignee $principalId --role acrpull --scope $regist
 ```
 
 ### Deploy the Azure App Service
-
-Click [here](https://github.com/massdriver-cloud/application-templates/tree/main/azure-app-service) for a production-ready configuration built using Terraform.
 
 1. Create an App Service Plan:
 
