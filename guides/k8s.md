@@ -132,6 +132,19 @@ spec:
           env:
             - name: env
               value: "dev"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <app-name>
+spec:
+  selector:
+    app: <app-name>
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
 ```
 
 3. Replace `<app-name>`, `<containerName>`, `<loginServer>`, `<imageName>`, and `<tag>` with your values.
@@ -143,7 +156,7 @@ spec:
 1. Run the following command to deploy the app:
 
 ```bash
-kubectl apply -f app.yaml
+kubectl apply -f <app-name>.yaml
 ```
 
 2. Check the deployment status:
@@ -161,6 +174,9 @@ kubectl get service <service-name> --watch
 ```
 
 _The `<service-name>` is the name of the image in your manifest file._
+
+> [!WARNING]
+> TODO: Fix error `Cannot GET /` when running the app.
 
 Watch the `EXTERNAL-IP` address for your service to change from `<pending>` to an actual IP address.
 
