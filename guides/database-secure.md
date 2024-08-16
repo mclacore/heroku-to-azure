@@ -12,8 +12,8 @@ This guide will walk you through the steps to migrate a Heroku Postgres database
 - [psql client](https://www.postgresql.org/download/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
 - [kubelogin](https://azure.github.io/kubelogin/install.html)
-- Azure PostgreSQL Flexible Server instance up and running with private access enabled
-- Azure Kubernetes Service (AKS) cluster up and running within the same virtual network as the Azure PostgreSQL Flexible Server
+- Azure PostgreSQL Flexible Server instance up and running with private access enabled ([Terraform example](https://github.com/massdriver-cloud/azure-postgresql-flexible-server))
+- [Azure Kubernetes Service (AKS)](/guides/k8s.md#create-a-kubernetes-cluster) cluster up and running within the same virtual network as the Azure PostgreSQL Flexible Server
 
 ## Migration
 
@@ -111,14 +111,26 @@ heroku pg:backups:download --app <app-name>
 
 ### Restore the backup
 
+1. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
+
 ```bash
-pg_restore --verbose --no-owner -h <azure-postgres-server>.postgres.database.azure.com -U <username> -d <database-name> latest.dump
+fqdn=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "fullyQualifiedDomainName" --output tsv)
+```
+
+```bash
+username=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "administratorLogin" --output tsv)
+```
+
+2. Restore the backup to the Azure PostgreSQL Flexible Server:
+
+```bash
+pg_restore --verbose --no-owner -h $fqdn -U $username -d <database-name> latest.dump
 ```
 
 _You can confirm the restoration by running the following:_
 
 ```bash
-psql -h <azure-postgres-server>.postgres.database.azure.com -U <username> -d <database-name> -c \dt
+psql -h $fqdn -U $username -d <database-name> -c \dt
 ```
 
 ### Delete the temporary pod

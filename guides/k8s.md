@@ -69,6 +69,8 @@ az acr repository list --name <registry-name> --output table
 
 ### Create a Kubernetes cluster
 
+Click [here](https://github.com/massdriver-cloud/azure-aks-cluster) for a production-ready configuration built in Terraform.
+
 1. Create a Kubernetes cluster:
 
 > [!NOTE]

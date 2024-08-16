@@ -5,7 +5,7 @@
 - [redis-cli](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
-- Azure Cache for Redis deployed (**[tier must be Premium, Enterprise, or Enterprise Flash](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-import-export-data#which-tiers-support-importexport)**)
+- Azure Cache for Redis deployed (**[tier must be Premium, Enterprise, or Enterprise Flash](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-import-export-data#which-tiers-support-importexport)**, example [here](https://github.com/massdriver-cloud/azure-cache-redis))
 
 ## Create a backup of Heroku Redis
 

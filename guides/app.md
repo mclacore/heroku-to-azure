@@ -103,6 +103,8 @@ az role assignment create --assignee $principalId --role acrpull --scope $regist
 
 ### Deploy the Azure App Service
 
+Click [here](https://github.com/massdriver-cloud/application-templates/tree/main/azure-app-service) for a production-ready configuration built using Terraform.
+
 1. Create an App Service Plan:
 
 ```bash
