@@ -1,16 +1,22 @@
 # syntax=docker/dockerfile:1
 
-ARG NODE_VERSION=22.5.1
-
-FROM node:${NODE_VERSION}-alpine
-
-ENV NODE_ENV=production
+FROM node:16-alpine
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY package*.json ./
 
 RUN npm install
+
+COPY . .
+
+WORKDIR /usr/src/app/client
+
+RUN npm install
+
+RUN npm run build
+
+WORKDIR /usr/src/app
 
 USER node
 

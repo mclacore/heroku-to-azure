@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const path = require("path");
 var bodyParser = require("body-parser");
 
 const services = require("./services/requests");
@@ -12,6 +13,8 @@ app.use(express.json());
 app.use(express.static("build"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.get("/api/activities", (req, res) => {
   // route root directory ('/' is this file (app.js))
@@ -29,6 +32,10 @@ app.get("/api/activities/new", (req, res) => {
 
 app.get("/api/activities/delete", (req, res) => {
   services.deleteAllActivites(req, res);
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 app.listen(PORT, () => {

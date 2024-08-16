@@ -1,4 +1,4 @@
-# Docker Compose file with Redis integration for a server application.
+version: '3.8'  # Specify Docker Compose file format version
 
 services:
   server:
@@ -7,10 +7,12 @@ services:
     environment:
       NODE_ENV: production
       REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgres://postgres@postgres:5432/postgres
     ports:
       - 8080:8080
     depends_on:
       - redis
+      - postgres
 
   redis:
     image: redis:latest
@@ -26,5 +28,14 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
 volumes:
   redis-data:
+  postgres-data:

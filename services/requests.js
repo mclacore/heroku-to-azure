@@ -29,7 +29,6 @@ client.on("error", (err) => console.log("Redis Client Error", err));
     console.error("Error connecting to Redis", err);
   } finally {
     await client.quit();
-    console.log("Disconnected from Redis");
   }
 })();
 
