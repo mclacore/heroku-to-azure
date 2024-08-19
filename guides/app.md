@@ -31,6 +31,16 @@ Browse to `http://localhost:8000` to see your app running.
 
 ### Create an Azure Container Registry
 
+Setup your env vars (feel free to change these):
+
+```bash
+acrRg="herokutoazure"
+acrName="herokutoazure"
+imageName="herokutoazure"
+location="eastus"
+tag="latest"
+```
+
 1. Login to Azure CLI:
 
 ```bash
@@ -40,19 +50,23 @@ az login
 2. Create a resource group:
 
 ```bash
-az group create --name <resource-group> --location <location>
+az group create --name $acrRg --location $location
 ```
 
 3. Create an Azure Container Registry:
 
 ```bash
-az acr create --resource-group <resource-group> --name <registry-name> --sku Basic
+az acr create --resource-group $acrRg --name $acrName --sku Basic
 ```
 
 4. Fetch the admin credentials for the registry and save for later use:
 
 ```bash
-az acr credential show --name <registry-name> --resource-group <resource-group>
+az acr update --name $acrName --admin-enabled true
+```
+
+```bash
+az acr credential show --name $acrName --resource-group $acrRg
 ```
 
 ### Build and push the Docker image
@@ -60,13 +74,13 @@ az acr credential show --name <registry-name> --resource-group <resource-group>
 1. Build and push the image to ACR using:
 
 ```bash
-az acr build --registry <registry-name> --image <imageName>:<tag> .
+az acr build --registry $acrName --image $imageName:$tag .
 ```
 
 2. List the image in the registry:
 
 ```bash
-az acr repository list --name <registry-name> --output table
+az acr repository list --name $acrName --output table
 ```
 
 ## Deploy to Azure App Service
@@ -77,26 +91,35 @@ Click [here](https://github.com/massdriver-cloud/application-templates/tree/main
 
 Azure App Service can either use a default system-assigned managed identity or a user-assigned managed identity to authenticate to a container registry. For best practices, we recommend using a user-assigned managed identity.
 
+Setup more env vars (feel free to change these):
+
+```bash
+appRg="herokutoazureapp"
+appName="herokutoazureapp"
+webhookName="herokutoazurewebhook"
+appPort="8080"
+```
+
 1. Create a resource group:
 
 ```bash
-az group create --name <resource-group> --location <location>
+az group create --name $appRg --location $location
 ```
 
 2. Create a user-assigned managed identity:
 
 ```bash
-az identity create --resource-group <resource-group> --name <identity-name>
+az identity create --resource-group $appRg --name $appName
 ```
 
 3. Assign the `AcrPull` role to the managed identity:
 
 ```bash
-principalId=$(az identity show --resource-group <resource-group> --name <identity-name> --query principalId --output tsv)
+principalId=$(az identity show --resource-group $appRg --name $appName --query principalId --output tsv)
 ```
 
 ```bash
-registryId=$(az acr show --resource-group <resource-group> --name <registry-name> --query id --output tsv)
+registryId=$(az acr show --resource-group $acrRg --name $acrName --query id --output tsv)
 ```
 
 ```bash
@@ -108,7 +131,7 @@ az role assignment create --assignee $principalId --role acrpull --scope $regist
 1. Create an App Service Plan:
 
 ```bash
-az appservice plan create --name <plan-name> --resource-group <resource-group> --is-linux
+az appservice plan create --name $appName --resource-group $appRg --is-linux
 ```
 
 _By default, the command uses an inexpensive [B1 pricing tier](https://azure.microsoft.com/pricing/details/app-service/linux/). You can specify a different pricing tier using the `--sku` parameter._
@@ -116,7 +139,7 @@ _By default, the command uses an inexpensive [B1 pricing tier](https://azure.mic
 2. Create the Web App:
 
 ```bash
-az webapp create --resource-group <resource-group> --plan <plan-name> --name <app-name> --deployment-container-image-name <registry-name>.azurecr.io/<imageName>:<tag>
+az webapp create --resource-group $appRg --plan $appName --name $appName --deployment-container-image-name $acrName.azurecr.io/$imageName:$tag
 ```
 
 _The `<app-name>` must be globally unique._
@@ -126,7 +149,7 @@ _The `<app-name>` must be globally unique._
 1. Set the `WEBSITES_PORT` app setting:
 
 ```bash
-az webapp config appsettings set --resource-group <resource-group> --name <app-name> --settings WEBSITES_PORT=<port>
+az webapp config appsettings set --resource-group $appRg --name $appName --settings WEBSITES_PORT=$appPort
 ```
 
 _Also feel free to set other environment variables as needed using the command above. For example, you can set the `DATABASE_URL` or the `CACHE_URL`._
@@ -134,17 +157,17 @@ _Also feel free to set other environment variables as needed using the command a
 2. Set the managed identity for the App Service:
 
 ```bash
-id=$(az identity show --resource-group <resource-group> --name <identity-name> --query id --output tsv)
+id=$(az identity show --resource-group $appRg --name $appName --query id --output tsv)
 ```
 
 ```bash
-az webapp identity assign --resource-group <resource-group> --name <app-name> --identities $id
+az webapp identity assign --resource-group $appRg --name $appName --identities $id
 ```
 
 3. Configure app to pull from Azure Container Registry using managed identity:
 
 ```bash
-appConfig=$(az webapp config show --resource-group <resource-group> --name <app-name> --query id --output tsv)
+appConfig=$(az webapp config show --resource-group $appRg --name $appName --query id --output tsv)
 ```
 
 ```bash
@@ -154,7 +177,7 @@ az resource update --ids $appConfig --set properties.acrUseManagedIdentityCreds=
 4. Set the `Client ID` of your web app to pull from ACR:
 
 ```bash
-clientId=$(az identity show --resource-group <resource-group> --name <identity-name> --query clientId --output tsv)
+clientId=$(az identity show --resource-group $appRg --name $appName --query clientId --output tsv)
 ```
 
 ```bash
@@ -164,7 +187,7 @@ az resource update --ids $appConfig --set properties.acrUserManagedIdentityID=$c
 5. Enable CI/CD for the app:
 
 ```bash
-cicdUrl=$(az webapp deployment container config --enable-cd true --name <app-name> --resource-group <resource-group> --query CI_CD_URL --output tsv)
+cicdUrl=$(az webapp deployment container config --enable-cd true --name $appName --resource-group $appRg --query CI_CD_URL --output tsv)
 ```
 
 _`CI_CD_URL` is the URL that App Service generates for you. Your registry should use this URL to notify the app service that a new image push has occurred._
@@ -172,17 +195,17 @@ _`CI_CD_URL` is the URL that App Service generates for you. Your registry should
 6. Create a webhook in your container registry using `CI_CD_URL`:
 
 ```bash
-az acr webhook create --name <webhook-name> --registry <registry-name> --uri $cicdUrl --actions push --scope <imageName>:<tag>
+az acr webhook create --name $webhookName --registry $acrName --uri $cicdUrl --actions push --scope $acrName.azurecr.io
 ```
 
 7. Test the webhook:
 
 ```bash
-eventId=$(az acr webhook ping --name <webhook-name> --registry <registry-name> --query id --output tsv)
+eventId=$(az acr webhook ping --name $webhookName --registry $acrName --query id --output tsv)
 ```
 
 ```bash
-az acr webhook list-events --name <webhook-name> --registry <registry-name> --query "[?id=='$eventId'].eventResponseMessage"
+az acr webhook list-events --name $webhookName --registry $acrName --query "[?id=='$eventId'].eventResponseMessage"
 ```
 
 ### Verify the deployment
