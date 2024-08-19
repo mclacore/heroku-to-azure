@@ -36,20 +36,27 @@ Migrating your cache data into Azure Cache Redis requires the use page or block 
 
 ### Create a storage account
 
+Setup env vars:
+
+```bash
+nameEnv="herokutoazure" # Feel free to change this
+region="eastus" # Feel free to change this
+```
+
 1. Create a storage account:
 
 ```bash
-az group create --name <resource-group-name> --location <location>
+az group create --name $nameEnv --location $region
 ```
 
 ```bash
-az storage account create --name <storage-account-name> --resource-group <resource-group-name> --location <location> --sku Standard_LRS
+az storage account create --name $nameEnv --resource-group $nameEnv --location $region --sku Standard_LRS
 ```
 
 2. Create a storage container:
 
 ```bash
-az storage container create --name <container-name> --account-name <storage-account-name> --fail-on-exist --public-access blob
+az storage container create --name $nameEnv --account-name $nameEnv --fail-on-exist
 ```
 
 ### Upload the RDB file to Azure Storage
@@ -57,13 +64,14 @@ az storage container create --name <container-name> --account-name <storage-acco
 1. Upload your RDB file to the storage account:
 
 ```bash
-az storage blob upload --account-name <storage-account-name> --container-name <container-name> --name <blob-name> --file dump.rdb
+az storage blob upload --account-name $nameEnv --container-name $nameEnv --name $nameEnv --file dump.rdb
 ```
 
 2. Set the SAS URL of the blob:
 
 ```bash
-sasUrl=$(az storage blob generate-sas --account-name <storage-account-name> --container-name <container-name> --name <blob-name> --permissions r --expiry <YYYY-MM-DDT00:00:00Z> --output tsv)
+end=`date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ'`
+sasUrl=$(az storage blob generate-sas --account-name $nameEnv --container-name $nameEnv --name $nameEnv --permissions r --expiry $end --full-uri --output tsv)
 ```
 
 _Set an expiry date for the SAS URL to ensure that the data is not accessible after the migration._
