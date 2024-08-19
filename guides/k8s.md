@@ -36,8 +36,9 @@ Browse to `http://localhost:8000` to see your app running.
 Setup env vars (feel free to change these):
 
 ```bash
-rg="herokutoazure"
-name="herokutoazure"
+acrRg="herokutoazure"
+acrName="herokutoazure"
+imageName="herokutoazure"
 location="eastus"
 tag="latest"
 ```
@@ -51,13 +52,13 @@ az login
 2. Create a resource group:
 
 ```bash
-az group create --name $rg --location $location
+az group create --name $acrRg --location $location
 ```
 
 3. Create an Azure Container Registry:
 
 ```bash
-az acr create --resource-group $rg --name $name --sku Basic
+az acr create --resource-group $acrRg --name $acrName --sku Basic
 ```
 
 ### Build and push the Docker image
@@ -65,13 +66,13 @@ az acr create --resource-group $rg --name $name --sku Basic
 1. Build and push the image to ACR using:
 
 ```bash
-az acr build --registry $name --image <imageName>:$tag .
+az acr build --registry $acrName --image $imageName:$tag .
 ```
 
 2. List the image in the registry:
 
 ```bash
-az acr repository list --name $name --output table
+az acr repository list --name $acrName --output table
 ```
 
 ## Deploy to Azure Kubernetes Service
@@ -80,24 +81,35 @@ az acr repository list --name $name --output table
 
 Click [here](https://github.com/massdriver-cloud/azure-aks-cluster) for a production-ready configuration built in Terraform.
 
+Setup env vars (feel free to change these):
+
+```bash
+aksRg="herokutoazureaks"
+aksName="herokutoazureaks"
+```
+
 1. Create a Kubernetes cluster:
+
+```bash
+az group create --name $aksRg --location $location
+```
 
 > [!NOTE]
 > To run this command, you need to have **Owner** or **Azure account administrator** role.
 
 ```bash
 az aks create \
-  --resource-group $rg \
-  --name $name \
+  --resource-group $aksRg \
+  --name $aksName \
   --node-count 1 \
   --generate-ssh-keys \
-  --attach-acr $name
+  --attach-acr $acrName
 ```
 
 2. Get the credentials to connect to the cluster:
 
 ```bash
-az aks get-credentials --resource-group $rg --name $name
+az aks get-credentials --resource-group $aksRg --name $aksName
 ```
 
 3. Verify the connection:
@@ -111,7 +123,7 @@ kubectl get nodes
 1. Get login server address using the `az acr list` command and query for your login server:
 
 ```bash
-az acr list --resource-group $rg --query "[].{acrLoginServer:loginServer}" --output table
+az acr list --resource-group $acrName --query "[].{acrLoginServer:loginServer}" --output table
 ```
 
 2. Create a manifest file for your app `<your-app>.yaml` with the following content:
@@ -179,13 +191,8 @@ kubectl get pods
 1. Monitor the deployment status using:
 
 ```bash
-kubectl get service <service-name> --watch
+kubectl get service --watch
 ```
-
-_The `<service-name>` is the name of the image in your manifest file._
-
-> [!WARNING]
-> TODO: Fix error `Cannot GET /` when running the app.
 
 Watch the `EXTERNAL-IP` address for your service to change from `<pending>` to an actual IP address.
 
