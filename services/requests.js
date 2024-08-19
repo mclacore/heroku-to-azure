@@ -4,6 +4,9 @@ const { createClient } = require("redis");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 async function createTables() {
@@ -51,28 +54,46 @@ createTables().then(() => {
   console.log("All tables created or verified successfully.");
 });
 
-const client = createClient({
-  url: process.env.REDIS_URL,
-});
+async function startCache() {
+  const client = createClient({
+    url: process.env.REDIS_URL,
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+      tls: true,
+      rejectUnauthorized: false,
+    },
+  });
 
-client.on("error", (err) => console.log("Redis Client Error", err));
+  await client.connect();
+  console.log("Connected to Redis");
 
-(async () => {
-  try {
-    await client.connect();
-    console.log("Connected to Redis");
+  console.log("\nCache command: PING");
+  console.log("Cache response : " + (await client.ping()));
 
-    await client.set("foo", "bar");
-    console.log("Set foo to bar");
+  console.log("\nCache command: GET Message");
+  console.log("Cache response : " + (await client.get("message")));
 
-    const value = await client.get("foo");
-    console.log("Value of foo:", value);
-  } catch (err) {
-    console.error("Error connecting to Redis", err);
-  } finally {
-    await client.quit();
-  }
-})();
+  console.log("\nCache command: SET Message");
+  console.log(
+    "Cache response : " + (await client.set("message", "Hello World")),
+  );
+
+  console.log("\nCache command: GET Message");
+  console.log("Cache response : " + (await client.get("message")));
+
+  console.log("\nCache command: CLIENT LIST");
+  console.log(
+    "Cache response : " + (await client.sendCommand(["CLIENT", "LIST"])),
+  );
+
+  client.disconnect();
+
+  return "Done";
+}
+
+startCache()
+  .then((result) => console.log(result))
+  .catch((ex) => console.error(ex));
 
 const getAllActivities = (req, res) => {
   const getString = "SELECT * FROM my_activities";
