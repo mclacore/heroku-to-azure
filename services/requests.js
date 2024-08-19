@@ -94,10 +94,41 @@ const getAllActivities = (req, res) => {
 };
 
 const getSingleActivity = (req, res) => {
-  fetch("https://bored-api.appbrewery.com/random")
-    .then((data) => data.json())
-    .then((json) => res.json(json))
-    .catch((err) => console.log(err));
+  const primaryUrl = "https://bored-api.appbrewery.com/activity";
+  const fallbackUrl = "https://bored.api.lewagon.com/api/activity";
+
+  fetch(primaryUrl)
+    .then((response) => {
+      if (!response.ok)
+        throw new Error(`API responded with status ${response.status}`);
+      return response.json();
+    })
+    .then((json) => {
+      res.json(json);
+    })
+    .catch((error) => {
+      console.log(
+        `Failed to fetch from primary URL due to: ${error.message}. Trying fallback URL.`,
+      );
+      fetch(fallbackUrl)
+        .then((response) => {
+          if (!response.ok)
+            throw new Error(
+              `Fallback API responded with status ${response.status}`,
+            );
+          return response.json();
+        })
+        .then((json) => {
+          res.json(json);
+        })
+        .catch((fallbackError) => {
+          console.error("Failed to fetch from fallback URL:", fallbackError);
+          res.status(500).json({
+            error:
+              "Failed to fetch activity from both primary and fallback sources",
+          });
+        });
+    });
 };
 
 const addActivityToDB = (req, res) => {
