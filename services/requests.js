@@ -4,9 +4,51 @@ const { createClient } = require("redis");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+});
+
+async function createTables() {
+  const tableDefinitions = [
+    {
+      tableName: "my_activities",
+      query: `
+        CREATE TABLE IF NOT EXISTS my_activities (
+          id SERIAL PRIMARY KEY,
+          activity TEXT NOT NULL
+        );
+      `,
+    },
+    {
+      tableName: "my_goals",
+      query: `
+        CREATE TABLE IF NOT EXISTS my_goals (
+          id SERIAL PRIMARY KEY,
+          goal TEXT NOT NULL
+        );
+      `,
+    },
+    {
+      tableName: "my_hobbies",
+      query: `
+        CREATE TABLE IF NOT EXISTS my_hobbies (
+          id SERIAL PRIMARY KEY,
+          hobby TEXT NOT NULL
+        );
+      `,
+    },
+  ];
+
+  try {
+    for (const tableDef of tableDefinitions) {
+      await pool.query(tableDef.query);
+      console.log(`Table created or verified: ${tableDef.tableName}`);
+    }
+  } catch (err) {
+    console.error("Error creating tables:", err);
+  }
+}
+
+createTables().then(() => {
+  console.log("All tables created or verified successfully.");
 });
 
 const client = createClient({
@@ -52,7 +94,7 @@ const getAllActivities = (req, res) => {
 };
 
 const getSingleActivity = (req, res) => {
-  fetch("https://www.boredapi.com/api/activity")
+  fetch("https://bored-api.appbrewery.com/random")
     .then((data) => data.json())
     .then((json) => res.json(json))
     .catch((err) => console.log(err));

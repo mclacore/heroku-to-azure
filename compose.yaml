@@ -1,4 +1,4 @@
-version: '3.8'  # Specify Docker Compose file format version
+version: '3.8'
 
 services:
   server:
@@ -7,12 +7,14 @@ services:
     environment:
       NODE_ENV: production
       REDIS_URL: redis://redis:6379
-      DATABASE_URL: postgres://postgres@postgres:5432/postgres
+      DATABASE_URL: postgres://user:password@postgres:5432/postgres
     ports:
       - 8080:8080
     depends_on:
       - redis
       - postgres
+    env_file:
+      - .env
 
   redis:
     image: redis:latest
@@ -31,10 +33,15 @@ services:
   postgres:
     image: postgres:latest
     restart: always
-    ports:
-      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
 
 volumes:
   redis-data:
