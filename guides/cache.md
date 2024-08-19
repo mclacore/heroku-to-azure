@@ -36,11 +36,11 @@ Migrating your cache data into Azure Cache Redis requires the use page or block 
 
 ### Create a storage account
 
-Setup env vars:
+Setup env vars (feel free to change these):
 
 ```bash
-nameEnv="herokutoazure" # Feel free to change this
-region="eastus" # Feel free to change this
+nameEnv="herokutoazure"
+region="eastus"
 ```
 
 1. Create a storage account:

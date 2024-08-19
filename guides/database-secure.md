@@ -111,14 +111,21 @@ heroku pg:backups:download --app <app-name>
 
 ### Restore the backup
 
+Setup your env vars:
+
+```bash
+pgrg="<resource-group-name>"
+pgname="<server-name>"
+```
+
 1. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
 
 ```bash
-fqdn=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "fullyQualifiedDomainName" --output tsv)
+fqdn=$(az postgres flexible-server show --resource-group $pgrg --name $pgname --query "fullyQualifiedDomainName" --output tsv)
 ```
 
 ```bash
-username=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "administratorLogin" --output tsv)
+username=$(az postgres flexible-server show --resource-group $pgrg --name $pgname --query "administratorLogin" --output tsv)
 ```
 
 2. Restore the backup to the Azure PostgreSQL Flexible Server:

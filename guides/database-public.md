@@ -51,20 +51,31 @@ az account set --subscription <subscription-id>
 
 ### Set up the Azure Database for PostgreSQL Flexible Server
 
+Setup some env vars (feel free to change these):
+
+```bash
+rg="herokutoazure"
+name="herokutoazure"
+location="eastus"
+username="heroku"
+password="massdriver"
+myip=$(curl ifconfig.me)
+```
+
 1. Create an Azure Database for PostgreSQL Flexible Server:
 
 ```bash
 az postgres flexible-server create \
-  --resource-group <resource-group-name> \
-  --name <server-name> \
-  --location <location> \
-  --admin-user <username> \
-  --admin-password <password> \
+  --resource-group $rg \
+  --name $name \
+  --location $location \
+  --admin-user $username \
+  --admin-password $password \
   --tier GeneralPurpose \
   --sku-name Standard_D2s_v3 \
   --storage-size 128 \
   --version 16 \
-  --public-access <your-ip-address>
+  --public-access $myip
 ```
 
 _Modify the values for `version`, `storage-size`, `sku-name`, and `tier` as needed._
@@ -72,11 +83,11 @@ _Modify the values for `version`, `storage-size`, `sku-name`, and `tier` as need
 2. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
 
 ```bash
-fqdn=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "fullyQualifiedDomainName" --output tsv)
+fqdn=$(az postgres flexible-server show --resource-group $rg --name $name --query "fullyQualifiedDomainName" --output tsv)
 ```
 
 ```bash
-username=$(az postgres flexible-server show --resource-group <resource-group-name> --name <server-name> --query "administratorLogin" --output tsv)
+username=$(az postgres flexible-server show --resource-group $rg --name $name --query "administratorLogin" --output tsv)
 ```
 
 3. Restore the backup to your Azure Database for PostgreSQL Flexible Server:

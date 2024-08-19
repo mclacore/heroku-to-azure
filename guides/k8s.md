@@ -33,6 +33,15 @@ Browse to `http://localhost:8000` to see your app running.
 
 ### Create an Azure Container Registry
 
+Setup env vars (feel free to change these):
+
+```bash
+rg="herokutoazure"
+name="herokutoazure"
+location="eastus"
+tag="latest"
+```
+
 1. Log into Azure CLI:
 
 ```bash
@@ -42,13 +51,13 @@ az login
 2. Create a resource group:
 
 ```bash
-az group create --name <resource-group> --location <location>
+az group create --name $rg --location $location
 ```
 
 3. Create an Azure Container Registry:
 
 ```bash
-az acr create --resource-group <resource-group> --name <registry-name> --sku Basic
+az acr create --resource-group $rg --name $name --sku Basic
 ```
 
 ### Build and push the Docker image
@@ -56,13 +65,13 @@ az acr create --resource-group <resource-group> --name <registry-name> --sku Bas
 1. Build and push the image to ACR using:
 
 ```bash
-az acr build --registry <registry-name> --image <imageName>:<tag> .
+az acr build --registry $name --image <imageName>:$tag .
 ```
 
 2. List the image in the registry:
 
 ```bash
-az acr repository list --name <registry-name> --output table
+az acr repository list --name $name --output table
 ```
 
 ## Deploy to Azure Kubernetes Service
@@ -78,17 +87,17 @@ Click [here](https://github.com/massdriver-cloud/azure-aks-cluster) for a produc
 
 ```bash
 az aks create \
-  --resource-group <resource-group> \
-  --name <cluster-name> \
+  --resource-group $rg \
+  --name $name \
   --node-count 1 \
   --generate-ssh-keys \
-  --attach-acr <registry-name>
+  --attach-acr $name
 ```
 
 2. Get the credentials to connect to the cluster:
 
 ```bash
-az aks get-credentials --resource-group <resource-group> --name <cluster-name>
+az aks get-credentials --resource-group $rg --name $name
 ```
 
 3. Verify the connection:
@@ -102,7 +111,7 @@ kubectl get nodes
 1. Get login server address using the `az acr list` command and query for your login server:
 
 ```bash
-az acr list --resource-group <resource-group> --query "[].{acrLoginServer:loginServer}" --output table
+az acr list --resource-group $rg --query "[].{acrLoginServer:loginServer}" --output table
 ```
 
 2. Create a manifest file for your app `<your-app>.yaml` with the following content:
@@ -126,7 +135,7 @@ spec:
         "kubernetes.io/os": linux
       containers:
         - name: <containerName>
-          image: <loginServer>.azurecr.io/<imageName>:<tag>
+          image: <loginServer>.azurecr.io/<imageName>:latest
           ports:
             - containerPort: 8000
           env:
