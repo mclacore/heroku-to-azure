@@ -15,11 +15,15 @@ It's hard to provide a general guide on how to dockerize a Heroku app, as it dep
 - Build and test your Docker image locally before pushing it to a registry.
 
 ```bash
-docker build --tag <my-image-name> .
+imageName="herokutoazure"
 ```
 
 ```bash
-docker run -it -p 8000:8000 <my-image-name>
+docker build --tag $imageName .
+```
+
+```bash
+docker run -it -p 8000:8000 $imageName
 ```
 
 Browse to `http://localhost:8000` to see your app running.
@@ -36,7 +40,6 @@ Setup your env vars (feel free to change these):
 ```bash
 acrRg="herokutoazure"
 acrName="herokutoazure"
-imageName="herokutoazure"
 location="eastus"
 tag="latest"
 ```
@@ -95,7 +98,7 @@ Setup more env vars (feel free to change these):
 
 ```bash
 appRg="herokutoazureapp"
-appName="herokutoazureapp"
+appName="herokutoazureapp" # Must be globally unique
 webhookName="herokutoazurewebhook"
 appPort="8080"
 ```
@@ -141,8 +144,6 @@ _By default, the command uses an inexpensive [B1 pricing tier](https://azure.mic
 ```bash
 az webapp create --resource-group $appRg --plan $appName --name $appName --deployment-container-image-name $acrName.azurecr.io/$imageName:$tag
 ```
-
-_The `<app-name>` must be globally unique._
 
 ### Configure the App Service
 

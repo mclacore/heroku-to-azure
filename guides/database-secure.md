@@ -116,6 +116,7 @@ Setup your env vars:
 ```bash
 pgrg="<resource-group-name>"
 pgname="<server-name>"
+database="<database-name>"
 ```
 
 1. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
@@ -131,13 +132,13 @@ username=$(az postgres flexible-server show --resource-group $pgrg --name $pgnam
 2. Restore the backup to the Azure PostgreSQL Flexible Server:
 
 ```bash
-pg_restore --verbose --no-owner -h $fqdn -U $username -d <database-name> latest.dump
+pg_restore --verbose --no-owner -h $fqdn -U $username -d $database latest.dump
 ```
 
 _You can confirm the restoration by running the following:_
 
 ```bash
-psql -h $fqdn -U $username -d <database-name> -c \dt
+psql -h $fqdn -U $username -d $database -c \dt
 ```
 
 ### Delete the temporary pod
