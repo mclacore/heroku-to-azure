@@ -57,11 +57,11 @@ createTables().then(() => {
 async function startCache() {
   const client = createClient({
     url: process.env.REDIS_URL,
-    // password: process.env.REDIS_PASSWORD,
-    // socket: {
-    //   tls: true,
-    //   rejectUnauthorized: false,
-    // },
+    password: process.env.REDIS_PASSWORD,
+    socket: {
+      tls: true,
+      rejectUnauthorized: false,
+    },
   });
 
   await client.connect();

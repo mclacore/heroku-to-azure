@@ -121,6 +121,18 @@ database="<database-name>"
 
 1. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
 
+Install Azure CLI in the pod:
+
+```bash
+curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+```
+
+```bash
+az login
+```
+
+Find the FQDN and username:
+
 ```bash
 fqdn=$(az postgres flexible-server show --resource-group $pgrg --name $pgname --query "fullyQualifiedDomainName" --output tsv)
 ```
@@ -138,7 +150,7 @@ pg_restore --verbose --no-owner -h $fqdn -U $username -d $database latest.dump
 _You can confirm the restoration by running the following:_
 
 ```bash
-psql -h $fqdn -U $username -d $database -c \dt
+psql -h $fqdn -U $username -d $database -c "\dt"
 ```
 
 ### Delete the temporary pod
