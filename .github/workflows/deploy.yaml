@@ -1,0 +1,43 @@
+name: Deploy to Massdriver
+on:
+  push:
+    branches: [main]
+
+jobs:
+  push_and_deploy:
+    runs-on: ubuntu-latest
+    env:
+      MASSDRIVER_ORG_ID: ${{ secrets.MASSDRIVER_ORG_ID }}
+      MASSDRIVER_API_KEY: ${{ secrets.MASSDRIVER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Massdriver CLI
+        uses: massdriver-cloud/actions@v4
+      - name: Push Image
+        uses: massdriver-cloud/actions/image_push@v4
+        with:
+          namespace: webinar
+          image-name: heroku-to-azure
+          artifact: ${{ secrets.MASSDRIVER_ARTIFACT_ID }}
+          region: eastus
+          image-tag: ${{ github.sha }}
+          build-context: ./ # path to Dockerfile
+      - name: Publish Bundle 
+        uses: massdriver-cloud/actions/bundle_publish@v4
+        with:
+          build-directory: ./massdriver # path to massdriver config directory, contains massdriver.yaml
+      - name: Set Image Version 
+        uses: massdriver-cloud/actions/app_patch@v4
+        with:
+          project: wehbeaz
+          env: staging
+          manifest: herokuazure
+          set: |
+            .image.tag = "${{ github.sha }}"
+      - name: Deploy App
+        uses: massdriver-cloud/actions/app_deploy@v4
+        with:
+          project: wehbeaz
+          env: staging
+          manifest: herokuazure
+
