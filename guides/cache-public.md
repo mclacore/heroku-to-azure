@@ -1,4 +1,4 @@
-# Migrate from Heroku Redis to Azure Cache for Redis
+# Migrate from Heroku Redis to Azure Cache for Redis (public)
 
 > [!WARNING]
 > Heroku Redis version 7.2.4 uses RDB version 10, which is not compatible with Azure Redis Cache, which uses version 6.X.X and RDB version 9. Newer versions of Redis can read RDB files created by older versions. For example, Redis 7.0 can read RDB files from Redis 6.0. However, older versions of Redis cannot read RDB files created by newer versions. For example, Redis 6.0 cannot read RDB files from Redis 7.0. If this applies to your situation, **migration will not be possible**.
@@ -82,7 +82,7 @@ sasUrl=$(az storage blob generate-sas --account-name $accountName --container-na
 
 _Set an expiry date for the SAS URL to ensure that the data is not accessible after the migration._
 
-### Import data from Azure storage to Azure Cache for Redis
+### Import data from Azure storage to Azure Cache for Redis (public)
 
 Setup env vars (feel free to change these):
 

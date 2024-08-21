@@ -9,9 +9,6 @@ This guide will walk you through the steps to migrate a Heroku Postgres database
 
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli#troubleshooting-the-heroku-cli)
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [psql client](https://www.postgresql.org/download/)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
-- [kubelogin](https://azure.github.io/kubelogin/install.html)
 - Azure PostgreSQL Flexible Server instance up and running with private access enabled ([Terraform example](https://github.com/massdriver-cloud/azure-postgresql-flexible-server))
 - [Azure Kubernetes Service (AKS)](/guides/k8s.md#create-a-kubernetes-cluster) cluster up and running within the same virtual network as the Azure PostgreSQL Flexible Server
 
@@ -45,6 +42,12 @@ az login
 az account set --subscription <subscription-id>
 ```
 
+Install `kubectl` and `kubelogin`:
+
+```bash
+az aks install-cli
+```
+
 ```bash
 az aks get-credentials --resource-group <resource-group> --name <aks-cluster-name> --overwrite-existing
 ```
@@ -53,47 +56,36 @@ az aks get-credentials --resource-group <resource-group> --name <aks-cluster-nam
 kubelogin convert-kubeconfig -l azurecli
 ```
 
-2. Create a temporary pod manifest file `postgres-temp.yaml`:
+2. Create a temporary pod manifest file `haiku-havoc-hero.yaml`:
+
+[haiku-havoc-hero](https://github.com/mclacore/haiku-havoc-hero) is a simple container that has the tools needed to migrate data from Heroku to Azure.
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: postgres
+  name: haiku-havoc-hero
   namespace: default
 spec:
   containers:
-    - name: postgres
-      image: postgres
+    - name: haiku-havoc-hero
+      image: mclacore/haiku-havoc-hero:latest
+      imagePullPolicy: Always
       env:
         - name: POSTGRES_PASSWORD
-          value: massdriver
+          value: password
 ```
 
 3. Create the temporary pod:
 
 ```bash
-kubectl apply -f /dir/to/postgres-temp.yaml
+kubectl apply -f /dir/to/haiku-havoc-0hero.yaml
 ```
 
 4. Exec into the pod:
 
 ```bash
-kubectl exec -it postgres -- sh
-```
-
-5. Install the Heroku CLI:
-
-```bash
-apt-get update && apt install curl -y
-```
-
-```bash
-curl https://cli-assets.heroku.com/install.sh | sh
-```
-
-```bash
-heroku --version
+kubectl exec -it haiku-havoc-hero -- sh
 ```
 
 6. Download the backup:
@@ -120,12 +112,6 @@ database="<database-name>"
 ```
 
 1. Fetch the Azure PostgresQL Flexible Server FQDN and username using Azure CLI:
-
-Install Azure CLI in the pod:
-
-```bash
-curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-```
 
 ```bash
 az login

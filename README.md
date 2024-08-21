@@ -15,7 +15,8 @@ Guides for migrating your database to Azure:
 
 Guide for migrating your cache to Azure:
 
-- [Azure Redis Cache](./guides/cache.md)
+- [Azure Redis Cache (private network access only)](./guides/cache-secure.md)
+- [Azure Redis Cache (public network access)](./guides/cache-public.md)
 
 ## App Migration
 
@@ -29,4 +30,4 @@ Guides for migrating your app to Azure:
 Guide for migrating your CI/CD pipeline:
 
 - [GitHub Actions](./guides/ghaction.md)
-- [Azure DevOps](./guides/azdevops.md)
+- [Azure DevOps Pipelines](./guides/azdevops.md)
