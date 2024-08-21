@@ -11,6 +11,12 @@
 
 ## Create a backup of Heroku Redis
 
+Setup env vars:
+
+```bash
+appName="<app-name>"
+```
+
 1. Log into Heroku CLI
 
 ```bash
@@ -20,13 +26,17 @@ heroku login
 2. Fetch the Heroku Redis credentials:
 
 ```bash
-heroku redis:credentials -a <app-name>
+# Fetch the Heroku Redis credentials
+herokuRedis=$(heroku redis:credentials -a $appName)
+
+# Strip the user colon part from the URL
+herokuRedis=$(echo $herokuRedis | sed 's/rediss:\/\/:/rediss:\/\//')
 ```
 
 3. Create a backup of the Heroku Redis instance:
 
 ```bash
-redis-cli -h <host> -p <port> -a <password> --rdb dump.rdb
+redis-cli -u $herokuRedis --tls --insecure --rdb dump.rdb
 ```
 
 > [!NOTE]
