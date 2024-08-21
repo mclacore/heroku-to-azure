@@ -29,7 +29,7 @@ jobs:
       - name: Set Image Version 
         uses: massdriver-cloud/actions/app_patch@v4
         with:
-          project: wehbeaz
+          project: webheaz
           env: staging
           manifest: herokuazure
           set: |
@@ -37,7 +37,7 @@ jobs:
       - name: Deploy App
         uses: massdriver-cloud/actions/app_deploy@v4
         with:
-          project: wehbeaz
+          project: webheaz
           env: staging
           manifest: herokuazure
 
