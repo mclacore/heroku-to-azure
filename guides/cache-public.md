@@ -169,7 +169,7 @@ az redisenterprise database import --cluster-name $cacheName --resource-group $c
 2. Verify that the import was successful:
 
 ```bash
-redis-cli -h $cacheName.redis.cache.windows.net -p 6380 -a $accessKey --rdb dump.rdb
+redis-cli -h $cacheName.redis.cache.windows.net -p 6380 -a $accessKey
 ```
 
 ```bash
