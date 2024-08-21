@@ -8,7 +8,6 @@
 - [redis-cli](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
-- Azure Cache for Redis deployed (**[tier must be Premium, Enterprise, or Enterprise Flash](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-import-export-data#which-tiers-support-importexport)**, example [here](https://github.com/massdriver-cloud/azure-cache-redis))
 
 ## Create a backup of Heroku Redis
 
@@ -76,33 +75,105 @@ az storage blob upload --account-name $accountName --container-name $containerNa
 2. Set the SAS URL of the blob:
 
 ```bash
-end=`date -u -d "30 minutes" '+%Y-%m-%dT%H:%MZ'`
+# Linux:
+end=$(date -u -d "60 minutes" '+%Y-%m-%dT%H:%MZ')
+
+# MacOS:
+end=$(date -u -v+60M '+%Y-%m-%dT%H:%MZ')
+```
+
+```bash
 sasUrl=$(az storage blob generate-sas --account-name $accountName --container-name $containerName --name $blobName --permissions r --expiry $end --full-uri --output tsv)
 ```
 
 _Set an expiry date for the SAS URL to ensure that the data is not accessible after the migration._
 
-### Import data from Azure storage to Azure Cache for Redis (public)
+## Create an Azure Cache for Redis instance
 
 Setup env vars (feel free to change these):
 
 ```bash
 cacheRg="herokutoazure"
-cacheName="herokutoazure"
+cacheName="herokutoazure" # must be globally unique
+location="eastus"
 ```
 
-Run the following command to import the data from Azure Storage to Azure Cache for Redis:
+<details>
+<summary><h3>Create a premium tier cache</h3></summary>
 
-**Premium tier**:
+1. Create the cache:
+
+```bash
+az group create --name $cacheRg --location $location
+```
+
+```bash
+az redis create --name $cacheName --resource-group $cacheRg --location $location --sku Premium --vm-size p1
+```
+
+For more configuration options, click [here](https://learn.microsoft.com/en-us/cli/azure/redis?view=azure-cli-latest#az-redis-create).
+
+2. Fetch the access key of the cache:
+
+```bash
+accessKey=$(az redis list-keys --name $cacheName --resource-group $cacheRg --query primaryKey -o tsv)
+```
+
+</details>
+
+<details>
+<summary><h3>Create an enterprise tier cache</h3></summary>
+
+1. Create the cache:
+
+```bash
+az group create --name $cacheRg --location $location
+```
+
+```bash
+az redisenterprise create --name $cacheName --resource-group $cacheRg --location $location --sku "Enterprise_E1"
+```
+
+For more configuration options, click [here](https://learn.microsoft.com/en-us/cli/azure/redisenterprise?view=azure-cli-latest#az-redisenterprise-create).
+
+2. Fetch the access key of the cache:
+
+```bash
+accessKey=$(az redisenterprise database list-keys --cluster-name $cacheName --resource-group $cacheRg --query primaryKey -o tsv)
+```
+
+</details>
+
+### Import data from Azure storage to Azure Cache for Redis (public)
+
+1. Run the following command to import the data from Azure Storage to Azure Cache for Redis:
+
+<details>
+<summary><b>Premium tier</b></summary>
 
 ```bash
 az redis import --name $cacheName --resource-group $cacheRg --files $sasUrl
 ```
 
-**Enterprise tier**:
+</details>
+
+<details>
+<summary><b>Enterprise tier</b></summary>
 
 ```bash
 az redisenterprise database import --cluster-name $cacheName --resource-group $cacheRg --sas-uris $sasUrl
+```
+
+</details>
+
+2. Verify that the import was successful:
+
+```bash
+redis-cli -h $cacheName.redis.cache.windows.net -p 6380 -a $accessKey --rdb dump.rdb
+```
+
+```bash
+KEYS *
 ```
 
 ## Sources
