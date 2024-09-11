@@ -58,7 +58,7 @@ kubelogin convert-kubeconfig -l azurecli
 
 2. Create a temporary pod manifest file `haiku-havoc-hero.yaml`:
 
-[haiku-havoc-hero](https://github.com/mclacore/haiku-havoc-hero) is a simple container that has the tools needed to migrate data from Heroku to Azure.
+[haiku-havoc-hero](https://github.com/mclacore/haiku-havoc-hero) provides powerful containers that provide the tools needed to migrate data from Heroku to Azure.
 
 ```yaml
 apiVersion: v1
@@ -68,9 +68,8 @@ metadata:
   namespace: default
 spec:
   containers:
-    - name: haiku-havoc-hero
-      image: mclacore/haiku-havoc-hero:latest
-      imagePullPolicy: Always
+    - name: postgres
+      image: mclacore/haiku-havoc-hero:postgres-v1
       env:
         - name: POSTGRES_PASSWORD
           value: password

@@ -120,7 +120,7 @@ cacheName="<cache-name>"
 
 1. Create a new manifest file `haiku-havoc-hero.yaml`:
 
-[haiku-havoc-hero](https://github.com/mclacore/haiku-havoc-hero) is a simple container that has the tools needed to migrate data from Heroku to Azure.
+[haiku-havoc-hero](https://github.com/mclacore/haiku-havoc-hero) provides powerful containers that provide the tools needed to migrate data from Heroku to Azure.
 
 ```yaml
 apiVersion: v1
@@ -130,12 +130,8 @@ metadata:
   namespace: default
 spec:
   containers:
-    - name: haiku-havoc-hero
-      image: mclacore/haiku-havoc-hero:latest
-      imagePullPolicy: Always
-      env:
-        - name: POSTGRES_PASSWORD
-          value: password
+    - name: redis
+      image: mclacore/haiku-havoc-hero:redis-v1
 ```
 
 2. Deploy the pod:
