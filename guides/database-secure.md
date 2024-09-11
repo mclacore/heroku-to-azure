@@ -79,7 +79,7 @@ spec:
 3. Create the temporary pod:
 
 ```bash
-kubectl apply -f /dir/to/haiku-havoc-0hero.yaml
+kubectl apply -f /dir/to/haiku-havoc-hero.yaml
 ```
 
 4. Exec into the pod:
