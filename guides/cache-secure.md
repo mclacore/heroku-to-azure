@@ -85,7 +85,14 @@ az storage blob upload --account-name $accountName --container-name $containerNa
 2. Set the SAS URL of the blob:
 
 ```bash
-end=`date -u -d "60 minutes" '+%Y-%m-%dT%H:%MZ'`
+# Linux:
+end=$(date -u -d "60 minutes" '+%Y-%m-%dT%H:%MZ')
+
+# MacOS:
+end=$(date -u -v+60M '+%Y-%m-%dT%H:%MZ')
+```
+
+```bash
 sasUrl=$(az storage blob generate-sas --account-name $accountName --container-name $containerName --name $blobName --permissions r --expiry $end --full-uri --output tsv)
 ```
 
